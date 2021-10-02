@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <title>Show data</title>
+</head>
+<body>
+<br><br>
+<div class="col-md-12">
+    <h3 style="text-align: center;">Item Billings</h3>
+    <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Item Name</th>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Date Added</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Client Name</th>
+                <th>Item Name</th>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Date Added</th>
+            </tr>
+        </tfoot>
+    </table>
+
+</div>
+</body>
+
+<script>
+
+$(document).ready(function() {
+    $.ajax({
+            url:'/getAllItemBillings',
+            type: "GET",
+            success: function(data){
+                console.log(data);
+                $.each(data, function(key, value){
+                    $("table tbody").append("<tr><td>" +
+                                         value.clientName + "</td><td>" +
+                                         value.itemName + "</td><td>" +
+                                        value.desc +  "</td><td>" +
+                                         value.quantity +  "</td><td>" +
+                                         value.date +  "</td></tr>");
+                });
+                $('#example').DataTable();
+            }
+        });
+
+});
+</script>
+</html>

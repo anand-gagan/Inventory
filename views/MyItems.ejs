@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <title>Show data</title>
+</head>
+<body>
+<br><br>
+<div class="col-md-12">
+    <h3 style="text-align: center;">My Items</h3>
+    <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Item Id</th>
+                <th>Item Name</th>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Location</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Item Id</th>
+                <th>Item Name</th>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Location</th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+    </table>
+    
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">ItemId:</label>
+            <input type="text" class="form-control" id="recipient-name" readonly>
+          </div>
+          <div class="form-group">
+            <label for="location" class="col-form-label">Recipient:</label>
+            <textarea class="form-control" id="location"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="quantity" class="col-form-label">Quantity:</label>
+            <textarea class="form-control" id="quantity"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id ="transferSubmit" class="btn btn-primary">Transfer</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+
+<script>
+    $("#transferSubmit").click(function(e) {
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: "/transfer",
+      data: {
+        id: $("#recipient-name").val(),
+        location: $("#location").val(),
+        quantity: $("#quantity").val()
+      },
+      success: function(result) {
+        alert('ok');
+      },
+      error: function(result) {
+        alert('error');
+      }
+    });
+  });
+
+  $('#exampleModal').on('show.bs.modal', function (event) {
+    console.log('click recived');
+  var button = $(event.relatedTarget)
+  var recipient = button.data('whatever') 
+  var modal = $(this)
+  modal.find('.modal-title').text('New message to ' + recipient)
+  modal.find('.modal-body input').val(recipient)
+})
+
+$(document).ready(function() {
+    $.ajax({
+            url:'/getAllItems',
+            type: "GET",
+            success: function(data){
+                console.log(data);
+                $.each(data, function(key, value){
+                    $("table tbody").append("<tr><td>" +
+                                         value.itemId + "</td><td>" +
+                                         value.name + "</td><td>" +
+                                        value.desc +  "</td><td>" +
+                                         value.quantity +  "</td><td>" +
+                                         value.location +  "</td><td>" +
+                                        '<button type="button" '+value.state+' class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="'+value.itemId+'">Transfer</button>' +
+                                        "</td></tr>");
+                });
+                $('#example').DataTable();
+            }
+        });
+});
+</script>
+</html>

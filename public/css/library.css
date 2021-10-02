@@ -1,0 +1,56 @@
+#errorNumber {
+    font-family: 'Merriweather', serif;
+    font-size: 8rem;
+    margin-top: 10%
+}
+
+#errorName {
+    text-align: center;
+    margin-top: 50px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1.5rem
+}
+
+#home-btn {
+    font-family: 'Kalam', cursive;
+    background-color: #4ca77b;
+    border-color: #4ca77b
+}
+
+@media screen and (max-width:500px) {
+    #header {
+        margin-bottom: 17%;
+        margin-top: 10%;
+        font-size: 2rem
+    }
+    #errorNumber {
+        font-size: 6rem
+    }
+    #errorName {
+        font-size: 1.8rem
+    }
+}
+
+#nav {
+    background-color: #f5f5f5
+}
+
+#preview1 {
+    min-height: 20%;
+    min-width: 98%;
+    max-height: 20%;
+    max-width: 98%;
+}
+
+#code-btn1 {
+    background-color: #f5f5f5;
+}
+
+#code-btn1:hover {
+    background-color: rgb(219, 219, 219);
+    border: 1px solid #5abd74;
+}
+
+.card {
+    margin-top: 20px;
+}
