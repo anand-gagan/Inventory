@@ -4,8 +4,6 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "bcrypt": "^1.0.3",
-    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "connect-ensure-login": "^0.1.1",
     "connect-flash": "^0.1.1",
