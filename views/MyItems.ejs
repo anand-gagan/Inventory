@@ -105,7 +105,7 @@
 })
 
 $(document).ready(function() {
-    $.ajax({
+  $.ajax({
             url:'/getAllItems',
             type: "GET",
             success: function(data){
@@ -123,6 +123,24 @@ $(document).ready(function() {
                 $('#example').DataTable();
             }
         });
+
+  $.ajax({
+          url:'/vendor',
+          type: "POST",
+          data: {vendor: "intel"},
+          success: function(data){
+              console.log("success");
+          }
+      });
+
+    $.ajax({
+        url:'/item-ref',
+        type: "POST",
+        data: {item: "keyboard"},
+        success: function(data){
+            console.log("success Item");
+        }
+    });
 });
 </script>
 </html>

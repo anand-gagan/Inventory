@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <title>Transfer Requests</title>
+</head>
+<body>
+<br><br>
+<div class="col-md-12">
+    <h3 style="text-align: center;">My Transfer Requests</h3>
+    <table id="myRequests" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Request Id</th>
+                <th>Item Name</th>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Destination</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id = 'tab1'>
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Request Id</th>
+                <th>Item Name</th>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Destination</th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+    </table>
+
+</div>
+
+<div class="col-md-12">
+  <h3 style="text-align: center;">Request Received</h3>
+  <table id="receivedRequest" class="table table-striped table-bordered" style="width:100%">
+      <thead>
+          <tr>
+              <th>Request Id</th>
+              <th>Item Name</th>
+              <th>Item Description</th>
+              <th>Quantity</th>
+              <th>From</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody id = 'tab2'>
+
+      </tbody>
+      <tfoot>
+          <tr>
+              <th>Request Id</th>
+              <th>Item Name</th>
+              <th>Item Description</th>
+              <th>Quantity</th>
+              <th>From</th>
+              <th>Action</th>
+          </tr>
+      </tfoot>
+  </table>
+
+</div>
+</body>
+
+<script>
+    $("#transferSubmit").click(function(e) {
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: "/transfer",
+      data: {
+        id: $("#recipient-name").val(),
+        location: $("#location").val(),
+        quantity: $("#quantity").val()
+      },
+      success: function(result) {
+        alert('ok');
+      },
+      error: function(result) {
+        alert('error');
+      }
+    });
+  });
+
+$(document).ready(function() {
+    $.ajax({
+            url:'/getMyTransferRequests',
+            type: "GET",
+            success: function(data){
+                console.log(data);
+                $.each(data, function(key, value){
+                    $("#tab1").append("<tr><td>" +
+                                         value.transferId + "</td><td>" +
+                                         value.itemName + "</td><td>" +
+                                        value.desc +  "</td><td>" +
+                                         value.quantity +  "</td><td>" +
+                                         value.destination +  "</td><td>" +
+                                        '<button type="button" class="btn btn-primary delete" transferId="'+value.transferId+'">Delete</button>' +
+                                        "</td></tr>");
+                });
+                $('#myRequests').DataTable();
+            }
+        });
+    $.ajax({
+            url:'/getRecivedRequests',
+            type: "GET",
+            success: function(data){
+                console.log(data);
+                $.each(data, function(key, value){
+                    $("#tab2").append("<tr><td>" +
+                                         value.transferId + "</td><td>" +
+                                         value.itemName + "</td><td>" +
+                                        value.desc +  "</td><td>" +
+                                         value.quantity +  "</td><td>" +
+                                         value.source +  "</td><td>" +
+                                        '<button type="button" class="btn btn-primary approve" style="margin-right: 16px" transferId="'+value.transferId+'">Approve</button> <button type="button" class="btn btn-primary delete" transferId="'+value.transferId+'">Delete</button>' +
+                                        "</td></tr>");
+                });
+                $('#receivedRequest').DataTable();
+            }
+        });
+});
+</script>
+</html>

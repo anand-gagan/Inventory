@@ -4,9 +4,10 @@ var mongoose = require('mongoose');
 var passport = require("passport");
 var localStatergy = require("passport-local");
 var flash = require("connect-flash");
+var app = express();
 var user = require("./db");
 var flashMessages = require('flash-messages');
-var app = express();
+
 
 app.set('view engine', 'ejs');
 
@@ -17,6 +18,9 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function(){
 	console.log("Connected To MLab cloud database");
 });
+
+
+var routes = require("./routes")(app, mongoose);
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -42,26 +46,18 @@ passport.use(new localStatergy(user.authenticate()));
 passport.serializeUser(user.serializeUser());
 passport.deserializeUser(user.deserializeUser()); 
 
-var itemSchema = mongoose.Schema({
-	itemId: String,
-	name: String,
-	desc: String,
-	quantity: Number,
-	location: String,
-	state: String
-});
 
-var itemBillingSchema = mongoose.Schema({
-	clientName: String,
-	date: Date,
+var transferSchema = mongoose.Schema({
+	transferId: String,
 	itemName: String,
 	desc: String,
 	quantity: Number,
-	location: String
+	source: String,
+	destination: String,
+	state: String
 });
 
-var Item = mongoose.model('Item', itemSchema);
-var ItemBilling = mongoose.model('ItemBilling', itemBillingSchema);
+var Transfer = mongoose.model('Transfer', transferSchema);
 
 app.get('/', function(req, res){
 	if(!req.user)
@@ -82,6 +78,10 @@ app.get('/myItems', require('connect-ensure-login').ensureLoggedIn(), function(r
 	res.render('MyItems');
 });
 
+app.get('/transferPage', require('connect-ensure-login').ensureLoggedIn(), function(req, res){
+	res.render('TransferRequest');
+});
+
 app.get('/itemBillings', require('connect-ensure-login').ensureLoggedIn(),  function(req, res){
 	res.render('MyItemsBilling');
 });
@@ -92,7 +92,13 @@ app.post('/login', passport.authenticate("local", {
 });
 
 app.get('/register', function(req, res){
-	res.render('register');
+	if(!req.user)
+		res.redirect('/login');
+	else if(req.user.username != "naveen")
+		res.redirect('/home');
+	else {
+		res.render('register');
+	}
 });
 
 app.post('/register', function(req, res) {
@@ -119,26 +125,6 @@ app.get('/logout', function(req, res) {
     res.redirect('/');
 })
 
-app.get('/getAllItems', function(req, res){
-	console.log("here");
-	console.log(req.user +" aaaa");
-	if(!req.user)
-		res.send('Please log in');
-	else {
-		Item.find({location: { $in: [ req.user.username, "office" ] }},function (err, key) {
-			if (err)
-				return console.error('Oops! We got an error '+err);
-			else if(key) {
-				
-				res.setHeader('Content-Type', 'application/json');
-    			res.send(JSON.stringify(key));
-			}
-			else
-				res.send('error');
-		});
-	}
-});
-
 app.get('/getAllItemBillings', function(req, res){
 	console.log("here");
 	console.log(req.user +" aaaa");
@@ -161,6 +147,34 @@ app.get('/getAllItemBillings', function(req, res){
 	}
 });
 
+app.get('/getMyTransferRequests', function(req, res){
+	console.log("here transfer requests get call");
+	Transfer.find({source: req.user.username}, function (err, key) {
+		if (err)
+			return console.error('Oops! We got an error '+err);
+		else if(key) {
+			
+			res.setHeader('Content-Type', 'application/json');
+			res.send(JSON.stringify(key));
+		}
+	});
+});
+
+
+app.get('/getRecivedRequests', function(req, res){
+	console.log("here Received transfer requests get call");
+	Transfer.find({destination: req.user.username}, function (err, key) {
+		if (err)
+			return console.error('Oops! We got an error '+err);
+		else if(key) {
+			
+			res.setHeader('Content-Type', 'application/json');
+			res.send(JSON.stringify(key));
+		}
+	});
+});
+
+
 app.post('/transfer', function(req, res){
 	var itemId= req.body.id;
 	var loc = req.body.location;
@@ -174,6 +188,7 @@ app.post('/transfer', function(req, res){
     	return text;
 	}
 	var k = makeId();
+	var traId = makeId();
 	Item.findOne({itemId: itemId, location: "office"},function (err, key) {
 		if (err)
 			console.error('b' + err);
@@ -186,32 +201,16 @@ app.post('/transfer', function(req, res){
 					console.log("Item's qunatity reduced from source");
 				}
 			});
-			Item.findOne({name: key.name, desc: key.desc, location: "paras"},function (err, key) {
-				if (err)
-					console.error('b' + err);
-				else if(key)
-				{
-					
-					Item.updateOne({name: key.name, desc: key.desc, location: "paras"}, {quantity: Number(key.quantity) + Number(qu)},function (err, key) {
-						if (err) 
-							console.error('c' + err);
-						else {
-							console.log("Item was already added, updated quantity");
-						}
-					});
-				}
-				else{
-		
-					var newItem = new Item({itemId: k, name: key.name, desc: key.desc, quantity: qu, location: "paras", state: "false"});
-					newItem.save(function(err, testEvent) {
-							if (err) 
-								return console.error('d' + err);
-							else {
-								console.log("New Item Saved!");
-						}
-					});
-				}
-			});
+
+	var newTransfer = new Transfer({transferId: traId, itemName: key.name, desc: key.desc, quantity: qu, source: req.user.username, destination: loc, state : "pending"});
+	newTransfer.save(function(err, testEvent) {
+			if (err) 
+				console.error('a' + err);
+			else {
+				console.log("New Transfer Request Saved!");
+		}
+	});
+	///		updateOrAddItemUtil(key.name, key.desc, key.quantity, loc);
         }
 		else{
 			console.log("NOt Found");
@@ -231,24 +230,15 @@ app.post('/save', function(req, res){
 	// if(createdBy != "naveen")
 	// 	res.sendStatus(403);
 
-	function makeId(){
-		var text = "";
-    	var combination = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
-    	for(var i=0; i < 4; i++)
-        	text += combination.charAt(Math.floor(Math.random() * combination.length));
-    	return text;
-	}
 	var cl= req.body.client;
 	var na = req.body.Name;
 	var des = req.body.Description;
 	var qu = req.body.Quantity;
-	//var lo = req.body.Location;
-	var lo = "office";
+	var lo = req.body.Location;
 
-	console.log(cl + na + des + qu + lo);
+	console.log("request received for add item = " +cl +' '+ na +' '+ des +' '+ qu +' ' + lo);
 
 	var datetime = new Date();
-	var k = makeId();
 
 	var newItemBilling = new ItemBilling({clientName: cl, date: datetime, itemName: na, desc: des, quantity: qu, location: lo});
 	newItemBilling.save(function(err, testEvent) {
@@ -259,23 +249,24 @@ app.post('/save', function(req, res){
 		}
 	});
 
-	Item.findOne({name: na, desc: des},function (err, key) {
-		if (err)
-			console.error('b' + err);
-        else if(key)
-        {
-			
-			Item.updateOne({name: na, desc: des,location: lo}, {quantity: Number(key.quantity) + Number(qu)},function (err, key) {
-				if (err) 
-					console.error('c' + err);
-				else {
-					console.log("Item was already added, updated quantity");
-				}
-			});
-        }
-		else{
+	updateOrAddItemUtil(na, des, qu, lo);
+	res.sendStatus(200);
+});
 
-			var newItem = new Item({itemId: k, name: na, desc: des, quantity: qu, location: lo, state: "false"});
+function makeId(){
+	var text = "";
+	var combination = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
+	for(var i=0; i < 4; i++)
+		text += combination.charAt(Math.floor(Math.random() * combination.length));
+	return text;
+}
+
+function updateOrAddItemUtil(name, desc, qu, lo){
+	console.log('update or add request received for '+ name + desc + qu + lo);
+	Item.findOneAndUpdate({name: name, desc: desc, location: lo},{$inc: {quantity: qu}}, function (err, key) {
+		if (!key){
+			var k = makeId();
+			var newItem = new Item({itemId: k, name: name, desc: desc, quantity: qu, location: lo, state: "false"});
 			newItem.save(function(err, testEvent) {
 					if (err) 
 						return console.error('d' + err);
@@ -283,16 +274,29 @@ app.post('/save', function(req, res){
 						console.log("New Item Saved!");
 				}
 			});
-		}
+		} 
+		else {
+			console.log(err + ' s ' + key);
+			console.log("Found and updated");
+        }
     });
-	res.sendStatus(200);
-});
+}
 
 app.get('/home', function(req, res){
 	if(!req.user)
 		res.redirect('/login?url=/home');
 	else {
 		res.render('home');
+	}
+});
+
+app.get('/admin', function(req, res){
+	if(!req.user)
+		res.redirect('/login');
+	else if(req.user.username != "naveen")
+		res.redirect('/home');
+	else {
+		res.render('admin');
 	}
 });
 

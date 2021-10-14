@@ -1,0 +1,16 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Mac files
+.DS_Store
+
+# Dependency directories
+node_modules/
+
+# Webstorm
+.idea
+
+# Package.json auto-generated file
+package-lock.json
