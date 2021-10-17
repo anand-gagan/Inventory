@@ -60,10 +60,10 @@ var transferSchema = mongoose.Schema({
 var Transfer = mongoose.model('Transfer', transferSchema);
 
 app.get('/', function(req, res){
-	if(!req.user)
-		res.redirect('/login?url=/home');
-	else
-		res.render('home');
+	// if(!req.user)
+	// 	res.redirect('/login?url=/home');
+	// else
+		res.render('demo');
 });
 
 app.get('/login', function(req, res){
