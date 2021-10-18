@@ -27,7 +27,7 @@ $(document).ready(function() {
 
     $('#vendorList').click(function(event) {
         $.ajax({
-            url: 'http://localhost:3001/vendor',
+            url: '/vendor',
             type: 'GET',
             success:function(data){
                 console.log("Success callback", data)
@@ -49,7 +49,7 @@ $(document).ready(function() {
         var id = $(this).attr('id');
         console.log(id + 'we are here');
         $.ajax({
-            url: 'http://localhost:3001/item-ref',
+            url: '/item-ref',
             type: 'GET',
             async: false,
             success:function(data){
