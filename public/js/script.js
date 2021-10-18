@@ -32,9 +32,9 @@ $(document).ready(function() {
             success:function(data){
                 console.log("Success callback", data)
                 if(data) {
-                    $('#itemList').html('<option id="blank"> --- Select Vendor --- </option>');
+                    $('#vendorList').html('<option id="blank" disabled selected> --- Select Vendor --- </option>');
                     $.each(data, function(k, v) {
-                        $('#vendorList').append("<option id="+v._id+">" + v.name + "</option>");
+                        $('#vendorList').append("<option id="+v._id+" value="+v._id+">" + v.name + "</option>");
                     });
                 }
             },
@@ -44,16 +44,20 @@ $(document).ready(function() {
         });
     });
 
-    $('#itemList').click(function(event) {
+    $(document).on('click', '.itemList',function(event) {
+  //  $('#itemList1').click(function(event) {
+        var id = $(this).attr('id');
+        console.log(id + 'we are here');
         $.ajax({
             url: 'http://localhost:3001/item-ref',
             type: 'GET',
+            async: false,
             success:function(data){
                 console.log("Success callback", data)
                 if(data) {
-                    $('#itemList').html('<option id="blank"> -- Select Item -- </option>');
+                    $('#'+id).html('<option id="blank" disabled selected> -- Select Item -- </option>');
                     $.each(data, function(k, v) {
-                        $('#itemList').append("<option id="+v._id+">" + v.name + "</option>");
+                        $('#'+id).append("<option id="+v._id+" value="+v._id+">" + v.name + "</option>");
                     });
                 }
             },
@@ -63,7 +67,4 @@ $(document).ready(function() {
         });
     });
 
-    $('#itemForm').submit(function(event) {
-        // TODO validations
-    })
 });
