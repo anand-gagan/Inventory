@@ -1,5 +1,5 @@
 
-module.exports = function (app, mongoose) {
+module.exports = function (app, mongoose, user) {
 
     var bodyParser = require('body-parser');
 
@@ -27,6 +27,7 @@ app.use(bodyParser.json())
 
     var Item = mongoose.model('Item', itemSchema);
     var ItemBilling = mongoose.model('ItemBilling', itemBillingSchema);
+
     app.get('/getAllItemBillings', function(req, res){
         console.log("from seperate routes");
         console.log(req.user +" aaaa");
@@ -132,4 +133,5 @@ app.use(bodyParser.json())
         }
     });
 
+    var transferRoutes = require('../routes/transfer.js')(app, mongoose, user, Item);
 }

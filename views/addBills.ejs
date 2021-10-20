@@ -16,14 +16,19 @@
                 <form class="form-control" id="itemForm">
                     
                     <div class="row mx-auto">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <button type="button" style="min-width: 100%" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#itemModal">
                                 Add new Item
                             </button>
                         </div> 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <button type="button" style="min-width: 100%" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#vendorModal">
                                 Add new Vendor
+                            </button>
+                        </div> 
+                        <div class="col-md-4">
+                            <button type="button" style="min-width: 100%" class="btn btn-outline-secondary" onclick="window.location.href='/register'">
+                                Add new User
                             </button>
                         </div> <br /> <br /> <hr />
                         <div class="col-md-6">
@@ -54,7 +59,9 @@
                             </div>
     
                             <div class="col-md-4">
-                                <input type="location" placeholder="Location" id="location0" class="form-control" required>
+                                <select class="form-control location" id="location0" required>
+                                    <option value="blank" disabled selected> -- Select User -- </option>
+                                </select>
                             </div>
 
                             <div class="col-md-2">
@@ -136,7 +143,7 @@
                 let objTo = document.getElementById('appendFields')
                  let rowDiv = document.createElement('div');
                  rowDiv.setAttribute('class', 'row mx-auto removeRow' + idx);
-                 rowDiv.innerHTML = '<hr /><div class="col-md-4"><select class="form-control itemList" id="itemList'+idx+'" required><option value="" disabled selected> -- Select Item -- </option></select></div><div class="col-md-2"><input type="number" placeholder="Quantity" id="quantity'+idx+'" class="form-control" max="20" min="0" required></div><div class="col-md-4"><input type="location" placeholder="Location" id="location'+idx+'" class="form-control" required></div><div class="col-md-2"><button type="button" style="min-width: 100%" class="btn btn-outline-danger" onclick="removeField('+idx+')">Remove</button></div><br /> <br />';
+                 rowDiv.innerHTML = '<hr /><div class="col-md-4"><select class="form-control itemList" id="itemList'+idx+'" required><option value="" disabled selected> -- Select Item -- </option></select></div><div class="col-md-2"><input type="number" placeholder="Quantity" id="quantity'+idx+'" class="form-control" max="20" min="0" required></div><div class="col-md-4"><select class="form-control location" id="location'+idx+'" required><option value="blank" disabled selected> -- Select User -- </option></select></div><div class="col-md-2"><button type="button" style="min-width: 100%" class="btn btn-outline-danger" onclick="removeField('+idx+')">Remove</button></div><br /> <br />';
                 
                 objTo.appendChild(rowDiv);
                //objTo.append('<div class="row mx-auto removeRow'+idx+'"><hr /><div class="col-md-4"><select class="form-control itemList" id="itemList'+idx+'"><option value="blank"> -- Select Item -- </option></select></div><div class="col-md-4"></div><div class="col-md-2"><input type="number" placeholder="Quantity" name="quantity'+idx+'" class="form-control" max="20" min="0"></div><div class="col-md-4"><input type="location" placeholder="Location" name="location'+idx+'" class="form-control"></div><div class="col-md-2"><button type="button" style="min-width: 100%" class="btn btn-outline-danger" onclick="removeField('+idx+')">Remove</button></div><br /> <br /></div>')

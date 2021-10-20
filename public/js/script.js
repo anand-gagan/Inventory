@@ -67,4 +67,26 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on('click', '.location',function(event) {
+              var id = $(this).attr('id');
+              console.log(id + 'we are here');
+              $.ajax({
+                  url: '/user-ref',
+                  type: 'GET',
+                  async: false,
+                  success:function(data){
+                      console.log("Success callback", data)
+                      if(data) {
+                          $('#'+id).html('<option id="blank" disabled selected> -- Select User -- </option>');
+                          $.each(data, function(k, v) {
+                              $('#'+id).append("<option id="+v._id+" value="+v._id+">" + v.name + "</option>");
+                          });
+                      }
+                  },
+                  error:function(err) {
+                      console.error("EROOOOOOO!!", err);
+                  } 
+              });
+          });
+
 });

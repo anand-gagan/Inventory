@@ -1,4 +1,4 @@
-module.exports = function (app, mongoose) {
+module.exports = function (app, mongoose, user) {
 
     var bodyParser = require('body-parser');
 
@@ -70,6 +70,21 @@ module.exports = function (app, mongoose) {
             }
         });
         res.sendStatus(200);
+    });
+
+    app.get('/user-ref', function(req, res){
+        console.log("get user ref call");
+        user.find(function (err, key) {
+            if (err)
+                return console.error('Oops! We got an error '+err);
+            else if(key) {
+                
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(key));
+            }
+            else
+                res.send('error');
+        });
     });
 
 }
