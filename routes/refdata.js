@@ -16,6 +16,12 @@ module.exports = function (app, mongoose, user) {
     var Vendor = mongoose.model('Vendor', vendorSchema);
     var ItemRef = mongoose.model('ItemRef', ItemRefSchema);
 
+    function snake_case(str) {
+        return str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+            .map(s => s.toLowerCase())
+            .join('_');
+    }
+
     app.get('/vendor', function(req, res){
         console.log("get vendor call");
         Vendor.find(function (err, key) {
@@ -32,7 +38,7 @@ module.exports = function (app, mongoose, user) {
     });
 
     app.post('/vendor', function(req, res){
-        var vendor= req.body.vendor;
+        var vendor= snake_case(req.body.vendor);
         var newVendor = new Vendor({name: vendor});
         newVendor.save(function(err, testEvent) {
                 if (err) 
@@ -60,7 +66,7 @@ module.exports = function (app, mongoose, user) {
     });
 
     app.post('/item-ref', function(req, res){
-        var itemRef= req.body.item;
+        var itemRef= snake_case(req.body.item);
         var newItemRef = new ItemRef({name: itemRef});
         newItemRef.save(function(err, testEvent) {
                 if (err) 

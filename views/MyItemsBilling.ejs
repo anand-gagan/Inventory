@@ -17,11 +17,12 @@
     <table id="example" class="table table-striped table-bordered" style="width:100%">
         <thead>
             <tr>
-                <th>Client Name</th>
+                <th>Vendor Name</th>
                 <th>Item Name</th>
-                <th>Item Description</th>
                 <th>Quantity</th>
                 <th>Date Added</th>
+                <th>Location</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -29,11 +30,12 @@
         </tbody>
         <tfoot>
             <tr>
-                <th>Client Name</th>
+                <th>Vendor Name</th>
                 <th>Item Name</th>
-                <th>Item Description</th>
                 <th>Quantity</th>
                 <th>Date Added</th>
+                <th>Location</th>
+                <th>Actions</th>
             </tr>
         </tfoot>
     </table>
@@ -50,16 +52,36 @@ $(document).ready(function() {
             success: function(data){
                 console.log(data);
                 $.each(data, function(key, value){
+                    var date = new Date(value.date);
+
                     $("table tbody").append("<tr><td>" +
-                                         value.clientName + "</td><td>" +
-                                         value.itemName + "</td><td>" +
-                                        value.desc +  "</td><td>" +
+                                         value.vendorName + "</td><td>" +
+                                         value.name + "</td><td>" +
                                          value.quantity +  "</td><td>" +
-                                         value.date +  "</td></tr>");
+                                         date.toLocaleDateString() +  "</td><td>" +
+                                         value.location +  "</td><td>" 
+                                         +'<button type="button" class="btn btn-primary deleteBut" id="'+value._id+'">Delete</button></td></tr>');
                 });
                 $('#example').DataTable();
             }
         });
+
+    $(document).on('click', '.deleteBut',function(event) {
+        var id = $(this).attr('id');
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/deleteItem",
+            data: {id: id},
+            success: function(result) {
+                alert('ok');
+                window.location.reload();
+            },
+            error: function(result) {
+                alert('error');
+            }
+        });
+    });   
 
 });
 </script>

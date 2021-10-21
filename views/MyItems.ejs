@@ -19,7 +19,6 @@
             <tr>
                 <th>Item Id</th>
                 <th>Item Name</th>
-                <th>Item Description</th>
                 <th>Quantity</th>
                 <th>Location</th>
                 <th>Action</th>
@@ -32,7 +31,6 @@
             <tr>
                 <th>Item Id</th>
                 <th>Item Name</th>
-                <th>Item Description</th>
                 <th>Quantity</th>
                 <th>Location</th>
                 <th>Action</th>
@@ -114,33 +112,15 @@ $(document).ready(function() {
                     $("table tbody").append("<tr><td>" +
                                          value.itemId + "</td><td>" +
                                          value.name + "</td><td>" +
-                                        value.desc +  "</td><td>" +
                                          value.quantity +  "</td><td>" +
                                          value.location +  "</td><td>" +
-                                        '<button type="button" '+value.state+' class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="'+value.itemId+'">Transfer</button>' +
+                                        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="'+value.itemId+'">Transfer</button>' +
                                         "</td></tr>");
                 });
                 $('#example').DataTable();
             }
         });
 
-  $.ajax({
-          url:'/vendor',
-          type: "POST",
-          data: {vendor: "intel"},
-          success: function(data){
-              console.log("success");
-          }
-      });
-
-    $.ajax({
-        url:'/item-ref',
-        type: "POST",
-        data: {item: "keyboard"},
-        success: function(data){
-            console.log("success Item");
-        }
-    });
 });
 </script>
 </html>
