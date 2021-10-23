@@ -16,17 +16,22 @@
                 <form class="form-control" id="itemForm">
                     
                     <div class="row mx-auto">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <button type="button" style="min-width: 100%" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#itemModal">
                                 Add new Item
                             </button>
                         </div> 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <button type="button" style="min-width: 100%" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#vendorModal">
                                 Add new Vendor
                             </button>
                         </div> 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <button type="button" style="min-width: 100%" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#clientModal">
+                                Add new Client
+                            </button>
+                        </div> 
+                        <div class="col-md-3">
                             <button type="button" style="min-width: 100%" class="btn btn-outline-secondary" onclick="window.location.href='/register'">
                                 Add new User
                             </button>
@@ -108,6 +113,23 @@
                         <div class="modal-body">
                             <form method="post" id="addVendorForm" action="#">
                                 <input type="text" class="form-control" name="vendor" id="vendor" placeholder="Enter vendor name" required> <br />
+                                <button type="submit" class="btn btn-success form-control" data-bs-dismiss="modal" aria-label="Close"> Add </button>  
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="clientModalLabel">Add new Client</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" id="addClientForm" action="#">
+                                <input type="text" class="form-control" name="client" id="client" placeholder="Enter Client name" required> <br />
                                 <button type="submit" class="btn btn-success form-control" data-bs-dismiss="modal" aria-label="Close"> Add </button>  
                             </form>
                         </div>

@@ -55,7 +55,9 @@
           </div>
           <div class="form-group">
             <label for="location" class="col-form-label">Recipient:</label>
-            <textarea class="form-control" id="location"></textarea>
+            <select class="form-control location" id="location" required>
+              <option value="blank" disabled selected> -- Select User -- </option>
+          </select>
           </div>
           <div class="form-group">
             <label for="quantity" class="col-form-label">Quantity:</label>
@@ -80,12 +82,13 @@
       type: "POST",
       url: "/transfer",
       data: {
-        id: $("#recipient-name").val(),
-        location: $("#location").val(),
+        name: $("#recipient-name").val(),
+        location: $("#itemList").val(),
         quantity: $("#quantity").val()
       },
       success: function(result) {
         alert('ok');
+        window.location.reload();
       },
       error: function(result) {
         alert('error');
@@ -114,7 +117,7 @@ $(document).ready(function() {
                                          value.name + "</td><td>" +
                                          value.quantity +  "</td><td>" +
                                          value.location +  "</td><td>" +
-                                        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="'+value.itemId+'">Transfer</button>' +
+                                        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="'+value.name+'">Transfer</button>' +
                                         "</td></tr>");
                 });
                 $('#example').DataTable();
@@ -122,5 +125,28 @@ $(document).ready(function() {
         });
 
 });
+
+$(document).on('click', '.location',function(event) {
+  var id = $(this).attr('id');
+  console.log(id + 'we are here');
+  $.ajax({
+      url: '/user-ref',
+      type: 'GET',
+      async: false,
+      success:function(data){
+          console.log("Success callback", data)
+          if(data) {
+              $('#'+id).html('<option id="blank" disabled selected> -- Select User -- </option>');
+              $.each(data, function(k, v) {
+                  $('#'+id).append("<option id="+v._id+" value="+v.name+">" + v.name + "</option>");
+              });
+          }
+      },
+      error:function(err) {
+          console.error("EROOOOOOO!!", err);
+      } 
+  });
+});
+
 </script>
 </html>

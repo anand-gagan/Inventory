@@ -45,6 +45,33 @@ app.use(bodyParser.json())
         }
     });
 
+    app.get('/clientItems', function(req, res){
+        console.log("requested all Client Items");
+        user.find({isClient: true},function (err, key) {
+            if (err)
+                return console.error('Oops! We got an error '+err);
+            else if(key) {
+                var nameList = [];
+                key.forEach((obj) => {nameList.push(obj.name)});
+
+                console.log("fount this key" + key);
+                console.log("fount this nameList" + nameList);
+                Item.find({location: {$in : nameList}}, function (err, key) {
+                    if (err)
+                        return console.error('Oops! We got an error '+err);
+                    else if(key) {
+
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify(key));
+                    }
+                    else
+                        res.send('error');
+                });
+            }
+        });
+
+    });
+
     app.post('/save', function(req, res){
         var createdBy = "";
         if(req.user)

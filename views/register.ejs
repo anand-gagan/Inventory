@@ -58,6 +58,8 @@
             
             <input type="text" class="form-control" name="name" id="name" placeholder="Full Name" required="" autofocus="" />
             <input type="text" class="form-control" name="username" id="username" placeholder="username" required="" disabled/>
+            <input type="text" class="form-control" name="isClient" id="isClient" value="false" hidden/>
+            
             <input type="password" class="form-control" name="password" id="password" placeholder="Password" required="" disabled/>     		  
            
             <button class="btn btn-lg btn-primary btn-block" id="registerBtn" type="Submit" disabled>Signup</button>
@@ -65,7 +67,24 @@
         </form>			
       </div>
     </div>
-
+		<script>	
+      jQuery('#registerForm').on('submit',function(e){
+        e.preventDefault();
+        jQuery.ajax({
+          url:'/register',
+          type:'post',
+          data:jQuery('#registerForm').serialize(),
+          success:function(result){
+            alert("successfully Registered");
+            window.location.reload();
+          },
+          error:function(xhr, status, error){
+            alert("Error");
+            window.location.reload();
+          }
+        });
+      });
+      </script>
     <script src="js/validate.js"></script> 
 
   </body>

@@ -7,8 +7,7 @@ module.exports = function (app, mongoose, user, Item) {
 
     var transferSchema = mongoose.Schema({
         transferId: String,
-        itemName: String,
-        desc: String,
+        name: String,
         quantity: Number,
         source: String,
         destination: String,
@@ -16,12 +15,18 @@ module.exports = function (app, mongoose, user, Item) {
     });
     
     var Transfer = mongoose.model('Transfer', transferSchema);
-
-    
+  
+    function makeId(){
+        var text = "";
+        var combination = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
+        for(var i=0; i < 4; i++)
+            text += combination.charAt(Math.floor(Math.random() * combination.length));
+        return text;
+    }
 
     app.get('/getMyTransferRequests', function(req, res){
         console.log("here transfer requests get call");
-        Transfer.find({source: req.user.username}, function (err, key) {
+        Transfer.find({source: req.user.username, state: "pending"}, function (err, key) {
             if (err)
                 return console.error('Oops! We got an error '+err);
             else if(key) {
@@ -35,7 +40,7 @@ module.exports = function (app, mongoose, user, Item) {
 
     app.get('/getRecivedRequests', function(req, res){
         console.log("here Received transfer requests get call");
-        Transfer.find({destination: req.user.username}, function (err, key) {
+        Transfer.find({destination: req.user.username, state: "pending"}, function (err, key) {
             if (err)
                 return console.error('Oops! We got an error '+err);
             else if(key) {
@@ -48,26 +53,20 @@ module.exports = function (app, mongoose, user, Item) {
 
 
     app.post('/transfer', function(req, res){
-        var itemId= req.body.id;
-        var loc = req.body.location;
+        var name= req.body.name;
+        var dest = req.body.location;
+        var source = req.user.username;
         var qu = req.body.quantity;
         console.log('transfer request came');
-        function makeId(){
-            var text = "";
-            var combination = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
-            for(var i=0; i < 4; i++)
-                text += combination.charAt(Math.floor(Math.random() * combination.length));
-            return text;
-        }
         var k = makeId();
         var traId = makeId();
 
-        Item.findOne({itemId: itemId, location: "office"},function (err, key) {
+        Item.findOne({name: name, location: source},function (err, key) {
             if (err)
                 console.error('b' + err);
-            else if(key && key.quantity > Number(qu))
+            else if(key && key.quantity >= Number(qu))
             {
-                Item.updateOne({itemId: itemId, location: "office"}, {quantity: Number(key.quantity) - Number(qu)},function (err, key) {
+                Item.updateOne({name: name, location: source}, {quantity: Number(key.quantity) - Number(qu)},function (err, key) {
                     if (err) 
                         console.error('c' + err);
                     else {
@@ -75,7 +74,7 @@ module.exports = function (app, mongoose, user, Item) {
                     }
                 });
 
-                var newTransfer = new Transfer({transferId: traId, itemName: key.name, desc: key.desc, quantity: qu, source: req.user.username, destination: loc, state : "pending"});
+                var newTransfer = new Transfer({transferId: traId, name: name, quantity: qu, source: source, destination: dest, state : "pending"});
                 newTransfer.save(function(err, testEvent) {
                     if (err) 
                         console.error('a' + err);
@@ -83,15 +82,66 @@ module.exports = function (app, mongoose, user, Item) {
                         console.log("New Transfer Request Saved!");
                     }
                 });
-                ///		updateOrAddItemUtil(key.name, key.desc, key.quantity, loc);
+                res.sendStatus(200);
             }
             else{
-                console.log("NOt Found");
+                console.log("NOt Found or Found but quantity not available");
+                res.sendStatus(500);
             }
-
-            res.sendStatus(200);
         });
     });
 
+    app.post('/transfer/approve', function(req, res){
+        var transferId= req.body.transferId;
+        Transfer.findOneAndUpdate({transferId: transferId, state: "pending"},{state: "approved"},function (err, key) {
+            if (key){
+                incrItem(key.name, key.quantity, key.destination, res);
+            } 
+            else {
+                console.log("Transfer Request Not Found");
+                res.sendStatus(500);
+            }
+
+        });
+    });
+
+    app.post('/transfer/delete', function(req, res){
+        var transferId= req.body.transferId;
+        Transfer.findOneAndUpdate({transferId: transferId, state: "pending"},{state: "deleted"},function (err, key) {
+            if (key){
+                incrItem(key.name, key.quantity, key.source, res);
+            } 
+            else {
+                console.log("Transfer Request Not Found");
+                res.sendStatus(500);
+            }
+
+        });
+    });
+
+
+    function incrItem(na, qu, lo, res){
+        console.log('Increment Item Request received for '+ na + qu + lo);
+        Item.findOneAndUpdate({name: na, location: lo},{$inc: {quantity: qu}}, function (err, key) {
+            if (!key){
+                var k = makeId();
+                var newItem = new Item({itemId: k, name: na, quantity: qu, location: lo});
+                newItem.save(function(err, testEvent) {
+                        if (err) {
+                            console.error('d' + err);
+                            res.sendStatus(500);
+                        } 
+                        else {
+                            console.log("New Item Saved!");
+                            res.sendStatus(200);
+                    }
+                });
+            } 
+            else {
+                console.log("Found and updated");
+                res.sendStatus(200);
+            }
+        });
+    }
 
 }

@@ -10,6 +10,17 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#addClientForm').on('submit', function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: '/client',
+            type: 'POST',
+            data:$('#addClientForm').serialize(),
+            success:function(data){
+            }
+        });
+    });
     
     $('#addItemForm').on('submit', function(event) {
         event.preventDefault();

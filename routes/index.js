@@ -3,6 +3,12 @@ var flash = require("connect-flash");
 
 module.exports = function (app, mongoose, user, passport) {
 
+    function snake_case(str) {
+        return str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+            .map(s => s.toLowerCase())
+            .join('_');
+    }
+
     app.use(require("express-session")({
         secret:"hello friends",
         resave:false,
@@ -38,6 +44,10 @@ module.exports = function (app, mongoose, user, passport) {
     
     app.get('/itemBillings', require('connect-ensure-login').ensureLoggedIn(),  function(req, res){
         res.render('MyItemsBilling');
+    });
+
+    app.get('/clientItemsPage', require('connect-ensure-login').ensureLoggedIn(),  function(req, res){
+        res.render('clientItems');
     });
 
 
@@ -76,13 +86,13 @@ module.exports = function (app, mongoose, user, passport) {
     });
 
     app.get('/register', function(req, res){
-        if(!req.user)
-            res.redirect('/login');
-        else if(req.user.username != "naveen")
-            res.redirect('/home');
-        else {
+        // if(!req.user)
+        //     res.redirect('/login');
+        // else if(req.user.username != "naveen")
+        //     res.redirect('/home');
+        // else {
             res.render('register');
-        }
+        // }
     });
 
     app.post('/register', function(req, res) {
@@ -90,17 +100,41 @@ module.exports = function (app, mongoose, user, passport) {
         var newUser= ({
             name:req.body.name,
             username:req.body.username,
-            isVerified:'false'
+            isVerified:'false',
+            isClient: req.body.isClient
         });
         user.register(newUser , req.body.password , function(err , user){
             if(err)
             {
-                console.log("Error in registering");
-                req.flash("error" , err.message);
-                res.redirect("/signup");
+                console.log("Error in registering" + err);
+                res.sendStatus(500);
             }
-            req.flash("success" , "You are successfully registered!");
-            res.redirect("/login");
+            else{
+                console.log("success" , "You are successfully registered!");
+                res.sendStatus(200);
+            }
+        });
+    });
+
+
+    app.post('/client', function(req, res){
+        var client= snake_case(req.body.client);
+        var newUser= ({
+            name:client,
+            username:client,
+            isVerified:'false',
+            isClient: true
+        });
+        user.register(newUser , "fake" , function(err , user){
+            if(err)
+            {
+                console.log("Error in registering" + err);
+                res.sendStatus(500);
+            }
+            else{
+                console.log("success" , "Client Added Successfully");
+                res.sendStatus(200);
+            }
         });
     });
 
