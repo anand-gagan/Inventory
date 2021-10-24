@@ -98,10 +98,10 @@ module.exports = function (app, mongoose, user, passport) {
     app.post('/register', function(req, res) {
         console.log('register post page from here');
         var newUser= ({
-            name:req.body.name,
-            username:req.body.username,
+            name:snake_case(req.body.name),
+            username:snake_case(req.body.username),
             isVerified:'false',
-            isClient: req.body.isClient
+            isClient: true
         });
         user.register(newUser , req.body.password , function(err , user){
             if(err)
@@ -146,5 +146,9 @@ module.exports = function (app, mongoose, user, passport) {
 
     var itemBillingRoutes = require('../routes/item.js')(app, mongoose, user);
     var refDataRoutes = require('../routes/refdata.js')(app, mongoose, user);
+
+    app.get('/*', function(req, res) {
+        res.render('error');
+    })
 }
 

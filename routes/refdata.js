@@ -93,17 +93,4 @@ module.exports = function (app, mongoose, user) {
         });
     });
 
-    app.post('/client', function(req, res){
-        var vendor= snake_case(req.body.vendor);
-        var newVendor = new Vendor({name: vendor});
-        newVendor.save(function(err, testEvent) {
-                if (err) 
-                    console.error('a' + err);
-                else {
-                    console.log("Vendor Saved!");
-            }
-        });
-        res.sendStatus(200);
-    });
-
 }

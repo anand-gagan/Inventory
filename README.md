@@ -1,8 +1,9 @@
-# Doodle Pen
-> An Online IDE by Paras Aggarwal
+# Gvent
+> An Inventory Management tool
 
-Doodle Pen is an Online IDE for Developers, where one can play with the three core elements of web development i.e. HTML, CSS, JS.
-[See Demo](http://doodlepen.herokuapp.com/)
+Gvent is an Inventory Management tool for companies, where people can keep a track of their inventory Items and transfer them as per their operations.
+
+[See Demo](http://gvent.herokuapp.com/)
 
 ### Technology Stack
 
@@ -20,8 +21,8 @@ Doodle Pen is an Online IDE for Developers, where one can play with the three co
 ### Clone Repository
 
 ```sh
-git clone https://github.com/paras-aggarwal/doodlepen
-cd doodlepen
+git clone https://github.com/anand-gagan/Inventory
+cd inventory
 ```
 
 ### Installation
@@ -33,4 +34,4 @@ nodemon index.js
 ```
 
 ### Report Bugs / Suggest new features
-To report bug or suggest a new feature, raise an issue at [Issues](https://github.com/paras-aggarwal/doodlepen/issues)
+To report bug or suggest a new feature, raise an issue at the issue section of Git REPO.

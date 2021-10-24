@@ -3,9 +3,9 @@ module.exports = function (app, mongoose, user) {
 
     var bodyParser = require('body-parser');
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-    
+    app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.json())
+
     var itemBillingSchema = mongoose.Schema({
         vendorName: String,
         date: Date,
