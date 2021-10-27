@@ -3,6 +3,11 @@ var flash = require("connect-flash");
 
 module.exports = function (app, mongoose, user, passport) {
 
+    function snakeCase(key) {
+        var result = key.replace( /([A-Z])/g, " $1" );
+        return result.split(' ').join('_').toLowerCase();
+     }
+
     app.use(require("express-session")({
         secret:"hello friends",
         resave:false,
@@ -128,7 +133,7 @@ module.exports = function (app, mongoose, user, passport) {
             else if(!key  || key == "") {
                 var newUser= ({
                     name:client,
-                    username:client,
+                    username:client.split(' ').join('_'),
                     isClient: true
                 });
                 user.register(newUser , "fakePass" , function(err , user){

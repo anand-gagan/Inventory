@@ -42,7 +42,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Transfer Request</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -61,7 +61,7 @@
           </div>
           <div class="form-group">
             <label for="quantity" class="col-form-label">Quantity:</label>
-            <textarea class="form-control" id="quantity"></textarea>
+            <input type="number" class="form-control" id="quantity" max="200" min="1">
           </div>
         </form>
       </div>
@@ -78,22 +78,27 @@
 <script>
     $("#transferSubmit").click(function(e) {
     e.preventDefault();
-    $.ajax({
-      type: "POST",
-      url: "/transfer",
-      data: {
-        id: $("#item-id").val(),
-        location: $("#locationName").val(),
-        quantity: $("#quantity").val()
-      },
-      success: function(result) {
-        alert('ok');
-        window.location.reload();
-      },
-      error: function(result) {
-        alert('error');
-      }
-    });
+    if($("#quantity").val() >= 0 && $("#locationName").val() != ""){
+      $.ajax({
+        type: "POST",
+        url: "/transfer",
+        data: {
+          id: $("#item-id").val(),
+          location: $("#locationName").val(),
+          quantity: $("#quantity").val()
+        },
+        success: function(result) {
+          alert('ok');
+          window.location.reload();
+        },
+        error: function(result) {
+          alert('error (Please recheck entered values)');
+        }
+      });
+    }
+    else{
+      alert("Please enter correct values");
+    }
   });
 
   $('#exampleModal').on('show.bs.modal', function (event) {
@@ -101,7 +106,7 @@
   var button = $(event.relatedTarget)
   var recipient = button.data('whatever') 
   var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
+  modal.find('.modal-title').text('Transfer Request for ' + recipient)
   modal.find('.modal-body input').val(recipient)
 })
 
@@ -117,7 +122,7 @@ $(document).ready(function() {
                                          value.name + "</td><td>" +
                                          value.quantity +  "</td><td>" +
                                          value.location +  "</td><td>" +
-                                        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="'+value.name+'">Transfer</button>' +
+                                        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="'+value.itemId+'">Transfer</button>' +
                                         "</td></tr>");
                 });
                 $('#example').DataTable();

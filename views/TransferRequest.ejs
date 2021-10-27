@@ -20,7 +20,8 @@
                 <th>Request Id</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
-                <th>Destination</th>
+                <th>From</th>
+                <th>To</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -32,7 +33,8 @@
                 <th>Request Id</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
-                <th>Destination</th>
+                <th>From</th>
+                <th>To</th>
                 <th>Action</th>
             </tr>
         </tfoot>
@@ -49,6 +51,7 @@
               <th>Item Name</th>
               <th>Quantity</th>
               <th>From</th>
+              <th>To</th>
               <th>Action</th>
           </tr>
       </thead>
@@ -61,6 +64,7 @@
               <th>Item Name</th>
               <th>Quantity</th>
               <th>From</th>
+              <th>To</th>
               <th>Action</th>
           </tr>
       </tfoot>
@@ -123,6 +127,7 @@ $(document).ready(function() {
                                          value.transferId + "</td><td>" +
                                          value.name + "</td><td>" +
                                          value.quantity +  "</td><td>" +
+                                         value.source +  "</td><td>" +
                                          value.destination +  "</td><td>" +
                                         '<button type="button" class="btn btn-primary delete" id="delete" transferId="'+value.transferId+'">Delete</button>' +
                                         "</td></tr>");
@@ -141,6 +146,7 @@ $(document).ready(function() {
                                          value.name + "</td><td>" +
                                          value.quantity +  "</td><td>" +
                                          value.source +  "</td><td>" +
+                                         value.destination +  "</td><td>" +
                                         '<button type="button" class="btn btn-primary approve" id="approve" style="margin-right: 16px" transferId="'+value.transferId+'">Approve</button>' +
                                         "</td></tr>");
                 });

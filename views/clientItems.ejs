@@ -20,7 +20,6 @@
                 <th>Client Name</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
-                <th>Date Added</th>
                 <th>Last Updated By</th>
             </tr>
         </thead>
@@ -32,7 +31,6 @@
                 <th>Client Name</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
-                <th>Date Added</th>
                 <th>Last Updated By</th>
             </tr>
         </tfoot>
@@ -56,8 +54,7 @@ $(document).ready(function() {
                                          value.location + "</td><td>" +
                                          value.name +  "</td><td>" +
                                          value.quantity +  "</td><td>" +
-                                         date.toLocaleDateString() +  "</td><td>" +
-                                         value.lastUpdBy +  "</td><td></tr>");
+                                         value.lastUpdBy +  "</td></tr>");
                 });
                 $('#example').DataTable();
             }

@@ -26,29 +26,47 @@ module.exports = function (app, mongoose, user, Item) {
 
     app.get('/getMyTransferRequests', function(req, res){
         console.log("here transfer requests get call");
-        Transfer.find({source: req.user.username, state: "pending"}, function (err, key) {
-            if (err)
-                return console.error('Oops! We got an error '+err);
-            else if(key) {
-                
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(key));
-            }
-        });
+        var source = [req.user.username];
+        if(req.user.username == "naveen")
+            source.push("office");
+        setTimeout(function () {
+            Transfer.find({source:{$in: source}, state: "pending"}, function (err, key) {
+                if (err)
+                    return console.error('Oops! We got an error '+err);
+                else if(key) {
+                    
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(key));
+                }
+            });
+        }, 2000);
     });
 
 
     app.get('/getRecivedRequests', function(req, res){
         console.log("here Received transfer requests get call");
-        Transfer.find({destination: req.user.username, state: "pending"}, function (err, key) {
-            if (err)
-                return console.error('Oops! We got an error '+err);
-            else if(key) {
-                
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(key));
-            }
-        });
+        var destination = [req.user.username];
+        if(req.user.username == "naveen"){
+            user.find({isClient: true},function (err, key) {
+                destination.push("office");
+                if (err)
+                    return console.error('Oops! We got an error '+err);
+                else if(key) {
+                    key.forEach((obj) => {destination.push(obj.username)});
+                }
+            });
+        }
+        setTimeout(function () {
+            Transfer.find({destination: {$in: destination}, state: "pending"}, function (err, key) {
+                if (err)
+                    return console.error('Oops! We got an error '+err);
+                else if(key) {
+                    
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify(key));
+                }
+            });
+        }, 2000);
     });
 
 
@@ -57,6 +75,13 @@ module.exports = function (app, mongoose, user, Item) {
         var dest = req.body.location;
         var source = req.user.username;
         var qu = req.body.quantity;
+
+        if(dest == "" || id == "" || qu == "")
+        {
+            console.log("Incorrect Data for transfer");
+            res.sendStatus(500);
+            return;
+        }
         console.log('transfer request came');
         var traId = makeId();
 
@@ -94,7 +119,7 @@ module.exports = function (app, mongoose, user, Item) {
         var transferId= req.body.transferId;
         Transfer.findOneAndUpdate({transferId: transferId, state: "pending"},{state: "approved"},function (err, key) {
             if (key){
-                incrItem(key.name, key.quantity, key.destination, res);
+                incrItem(key.name, key.quantity, key.destination, res, key.source);
             } 
             else {
                 console.log("Transfer Request Not Found");
@@ -108,7 +133,7 @@ module.exports = function (app, mongoose, user, Item) {
         var transferId= req.body.transferId;
         Transfer.findOneAndUpdate({transferId: transferId, state: "pending"},{state: "deleted"},function (err, key) {
             if (key){
-                incrItem(key.name, key.quantity, key.source, res);
+                incrItem(key.name, key.quantity, key.source, res, key.source);
             } 
             else {
                 console.log("Transfer Request Not Found");
@@ -119,12 +144,12 @@ module.exports = function (app, mongoose, user, Item) {
     });
 
 
-    function incrItem(na, qu, lo, res){
-        console.log('Increment Item Request received for '+ na + qu + lo);
-        Item.findOneAndUpdate({name: na, location: lo},{$inc: {quantity: qu}}, function (err, key) {
+    function incrItem(na, qu, lo, res, updatedBy){
+        console.log('Increment Item Request received for '+ na + qu + lo + updatedBy);
+        Item.findOneAndUpdate({name: na, location: lo},{$inc: {quantity: qu}, lastUpdBy: updatedBy }, function (err, key) {
             if (!key){
                 var k = makeId();
-                var newItem = new Item({itemId: k, name: na, quantity: qu, location: lo});
+                var newItem = new Item({itemId: k, name: na, quantity: qu, location: lo, lastUpdBy: updatedBy });
                 newItem.save(function(err, testEvent) {
                         if (err) {
                             console.error('d' + err);
