@@ -54,7 +54,11 @@ module.exports = function (app, mongoose, user, passport) {
         if(!req.user)
             res.redirect('/login');
         else {
-            res.render('home');
+            if(req.user.username == "naveen")
+                res.render('home', {isAdmin : true});
+            else{
+                res.render('home', {isAdmin : false}); 
+            }
         }
     });
 
