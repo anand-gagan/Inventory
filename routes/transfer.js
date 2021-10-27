@@ -53,31 +53,30 @@ module.exports = function (app, mongoose, user, Item) {
 
 
     app.post('/transfer', function(req, res){
-        var name= req.body.name;
+        var id= req.body.id;
         var dest = req.body.location;
         var source = req.user.username;
         var qu = req.body.quantity;
         console.log('transfer request came');
-        var k = makeId();
         var traId = makeId();
 
-        Item.findOne({name: name, location: source},function (err, key) {
+        Item.findOne({itemId: id, location: source},function (err, key) {
             if (err)
-                console.error('b' + err);
+                console.error('error occured : ' + err);
             else if(key && key.quantity >= Number(qu))
             {
-                Item.updateOne({name: name, location: source}, {quantity: Number(key.quantity) - Number(qu)},function (err, key) {
+                Item.updateOne({itemId: id, location: source}, {quantity: Number(key.quantity) - Number(qu)},function (err, key) {
                     if (err) 
-                        console.error('c' + err);
+                        console.error('error occured : ' + err);
                     else {
                         console.log("Item's qunatity reduced from source");
                     }
                 });
 
-                var newTransfer = new Transfer({transferId: traId, name: name, quantity: qu, source: source, destination: dest, state : "pending"});
+                var newTransfer = new Transfer({transferId: traId, name: key.name, quantity: qu, source: source, destination: dest, state : "pending"});
                 newTransfer.save(function(err, testEvent) {
                     if (err) 
-                        console.error('a' + err);
+                        console.error('error occured : ' + err);
                     else {
                         console.log("New Transfer Request Saved!");
                     }

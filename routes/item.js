@@ -1,5 +1,5 @@
 
-module.exports = function (app, mongoose, user) {
+module.exports = function (app, mongoose, user, refDataRoutes) {
 
     var bodyParser = require('body-parser');
 
@@ -18,7 +18,8 @@ module.exports = function (app, mongoose, user) {
         itemId: String,
         name: String,
         quantity: Number,
-        location: String
+        location: String,
+        lastUpdBy: String
     });
 
     var Item = mongoose.model('Item', itemSchema);
@@ -52,7 +53,7 @@ module.exports = function (app, mongoose, user) {
                 return console.error('Oops! We got an error '+err);
             else if(key) {
                 var nameList = [];
-                key.forEach((obj) => {nameList.push(obj.name)});
+                key.forEach((obj) => {nameList.push(obj.username)});
 
                 console.log("fount this key" + key);
                 console.log("fount this nameList" + nameList);
@@ -69,7 +70,6 @@ module.exports = function (app, mongoose, user) {
                 });
             }
         });
-
     });
 
     app.post('/save', function(req, res){
@@ -79,25 +79,33 @@ module.exports = function (app, mongoose, user) {
         
         var json = JSON.parse(req.body.data);
         json.forEach((item) => {
+
+                                        
+
+            var promises = [];
+            require('../routes/refdata.js').getVendorName(item);
+            require('../routes/refdata.js').getItemName(item);
             
-            var ve = item.vendor;
-            var na = item.item;
-            var qu = item.quantity;
-            var lo = item.location;
-            var da = item.date;
-        
-            console.log("request received by "+ createdBy +" for add item = " +ve +' '+ na +' '+ da +' '+ qu +' ' + lo);
-        
-            var newItemBilling = new ItemBilling({vendorName: ve, date: da, name: na, quantity: qu, location: lo});
-            newItemBilling.save(function(err, testEvent) {
-                    if (err) 
-                        console.error('a' + err);
-                    else {
-                        console.log("Item Billing Saved!");
-                }
-            });
-        
-            updateOrAddItemUtil(na, qu, lo);
+            setTimeout(function () {
+
+                var na = item.name;
+                var ve = item.vendor;
+                var qu = item.quantity;
+                var lo = item.location;
+                var da = item.date;
+                console.log("request received by "+ createdBy +" for add item = " +ve +' '+ na +' '+ da +' '+ qu +' ' + lo);
+            
+                var newItemBilling = new ItemBilling({vendorName: ve, date: da, name: na, quantity: qu, location: lo});
+                newItemBilling.save(function(err, testEvent) {
+                        if (err) 
+                            console.error('a' + err);
+                        else {
+                            console.log("Item Billing Saved!");
+                    }
+                });
+            
+                updateOrAddItemUtil(na, qu, lo, createdBy);
+            }, 2000);
         });
         res.sendStatus(200);
     });
@@ -110,12 +118,12 @@ module.exports = function (app, mongoose, user) {
         return text;
     }
     
-    function updateOrAddItemUtil(na, qu, lo){
+    function updateOrAddItemUtil(na, qu, lo, user){
         console.log('update or add request received for '+ na + qu + lo);
         Item.findOneAndUpdate({name: na, location: lo},{$inc: {quantity: qu}}, function (err, key) {
             if (!key){
                 var k = makeId();
-                var newItem = new Item({itemId: k, name: na, quantity: qu, location: lo});
+                var newItem = new Item({itemId: k, name: na, quantity: qu, location: lo, lastUpdBy: user});
                 newItem.save(function(err, testEvent) {
                         if (err) 
                             return console.error('d' + err);
@@ -136,7 +144,12 @@ module.exports = function (app, mongoose, user) {
         if(!req.user)
             res.send('Please log in');
         else {
-            Item.find({location: { $in: [ req.user.username, "office" ] }},function (err, key) {
+            var nameList = [];
+            if(req.user.username == "naveen")
+            nameList = ["office", "naveen"];
+            else
+            nameList = [req.user.username];
+            Item.find({location: { $in: nameList }},function (err, key) {
                 if (err)
                     return console.error('Oops! We got an error '+err);
                 else if(key) {

@@ -17,11 +17,11 @@
     <table id="example" class="table table-striped table-bordered" style="width:100%">
         <thead>
             <tr>
+                <th>Client Name</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
                 <th>Date Added</th>
-                <th>Client Name</th>
-                <th>Actions</th>
+                <th>Last Updated By</th>
             </tr>
         </thead>
         <tbody>
@@ -29,11 +29,11 @@
         </tbody>
         <tfoot>
             <tr>
+                <th>Client Name</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
                 <th>Date Added</th>
-                <th>Client Name</th>
-                <th>Actions</th>
+                <th>Last Updated By</th>
             </tr>
         </tfoot>
     </table>
@@ -53,10 +53,11 @@ $(document).ready(function() {
                     var date = new Date(value.date);
 
                     $("table tbody").append("<tr><td>" +
-                                         value.name + "</td><td>" +
+                                         value.location + "</td><td>" +
+                                         value.name +  "</td><td>" +
                                          value.quantity +  "</td><td>" +
                                          date.toLocaleDateString() +  "</td><td>" +
-                                         value.location +  "</td><td></tr>");
+                                         value.lastUpdBy +  "</td><td></tr>");
                 });
                 $('#example').DataTable();
             }

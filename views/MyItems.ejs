@@ -50,12 +50,12 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Item Name:</label>
-            <input type="text" class="form-control" id="recipient-name" readonly>
+            <label for="recipient-name" class="col-form-label">Item Id:</label>
+            <input type="text" class="form-control" id="item-id" readonly>
           </div>
           <div class="form-group">
             <label for="location" class="col-form-label">Recipient: </label>
-            <select class="form-control location" id="location" required>
+            <select class="form-control location" id="locationName" required>
               <option value="blank" disabled selected> -- Select User -- </option>
           </select>
           </div>
@@ -82,8 +82,8 @@
       type: "POST",
       url: "/transfer",
       data: {
-        name: $("#recipient-name").val(),
-        location: $("#itemList").val(),
+        id: $("#item-id").val(),
+        location: $("#locationName").val(),
         quantity: $("#quantity").val()
       },
       success: function(result) {
@@ -138,7 +138,7 @@ $(document).on('click', '.location',function(event) {
           if(data) {
               $('#'+id).html('<option id="blank" disabled selected> -- Select User -- </option>');
               $.each(data, function(k, v) {
-                  $('#'+id).append("<option id="+v._id+" value="+v.name+">" + v.name + "</option>");
+                  $('#'+id).append("<option id="+v._id+" value="+v.username+">" + v.username + "</option>");
               });
           }
       },

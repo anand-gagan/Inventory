@@ -1,4 +1,4 @@
-module.exports = function (app, mongoose, user) {
+module.exports.routes = function (app, mongoose, user) {
 
     var bodyParser = require('body-parser');
 
@@ -16,12 +16,6 @@ module.exports = function (app, mongoose, user) {
     var Vendor = mongoose.model('Vendor', vendorSchema);
     var ItemRef = mongoose.model('ItemRef', ItemRefSchema);
 
-    function snake_case(str) {
-        return str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-            .map(s => s.toLowerCase())
-            .join('_');
-    }
-
     app.get('/vendor', function(req, res){
         console.log("get vendor call");
         Vendor.find(function (err, key) {
@@ -38,16 +32,29 @@ module.exports = function (app, mongoose, user) {
     });
 
     app.post('/vendor', function(req, res){
-        var vendor= snake_case(req.body.vendor);
-        var newVendor = new Vendor({name: vendor});
-        newVendor.save(function(err, testEvent) {
-                if (err) 
-                    console.error('a' + err);
-                else {
-                    console.log("Vendor Saved!");
+        var vendor = req.body.vendor;
+
+        Vendor.find({name: vendor}, function (err, key) {
+            if (err)
+                return console.error('Oops! We got an error '+err);
+            else if(!key  || key == "") {
+
+                var newVendor = new Vendor({name: vendor});
+                newVendor.save(function(err, testEvent) {
+                    if (err) 
+                        console.error('a' + err);
+                    else {
+                        console.log("Vendor Saved!");
+                    }
+                });
+                res.sendStatus(200);
+            }
+            else{
+                console.log('Already present');
+                res.sendStatus(500);
             }
         });
-        res.sendStatus(200);
+
     });
     
     app.get('/item-ref', function(req, res){
@@ -66,17 +73,63 @@ module.exports = function (app, mongoose, user) {
     });
 
     app.post('/item-ref', function(req, res){
-        var itemRef= snake_case(req.body.item);
-        var newItemRef = new ItemRef({name: itemRef});
-        newItemRef.save(function(err, testEvent) {
-                if (err) 
-                    console.error('a' + err);
-                else {
-                    console.log("Item Ref Saved!");
+
+        var itemRef= req.body.item;
+
+        ItemRef.find({name: itemRef}, function (err, key) {
+            if (err)
+                console.error('Oops! We got an error '+err);
+            else if(!key || key == "") {
+                var newItemRef = new ItemRef({name: itemRef});
+                newItemRef.save(function(err, testEvent) {
+                    if (err) 
+                        console.error('a' + err);
+                    else {
+                        console.log("Item Ref Saved!");
+                    }
+                });
+            }
+            else{
+                console.log('Already present');
+                res.sendStatus(500);
             }
         });
+
         res.sendStatus(200);
     });
+
+    module.exports.vendor = Vendor;
+    module.exports.itemref = ItemRef;
+
+    module.exports.getVendorName = async function (item){
+        try{
+            await Vendor.findOne({_id: item.vendorId}, function (err, key) {
+                if (key){
+                    console.log("vendor name resp: " + key);
+                    item.vendor = key.name;
+                    return;
+                }
+            });
+        } catch(e){
+            console.log("error here: " + e);
+            return;
+        }
+    }
+
+    module.exports.getItemName = async function (item){
+        try{
+            await ItemRef.findOne({_id: item.itemId}, function (err, key) {
+                if (key){
+                    console.log("item name resp: " + key);
+                    item.name = key.name;
+                }
+                return;
+            });
+        } catch(e){
+            console.log("error here: " + e);
+            return;
+        }
+    }
 
     app.get('/user-ref', function(req, res){
         console.log("get user ref call");
@@ -92,5 +145,4 @@ module.exports = function (app, mongoose, user) {
                 res.send('error');
         });
     });
-
 }

@@ -45,7 +45,7 @@ $(document).ready(function() {
                 if(data) {
                     $('#vendorList').html('<option id="blank" disabled selected> --- Select Vendor --- </option>');
                     $.each(data, function(k, v) {
-                        $('#vendorList').append("<option id="+v._id+" value="+v.name+">" + v.name + "</option>");
+                        $('#vendorList').append("<option id="+v._id+" value="+v._id+">" + v.name + "</option>");
                     });
                 }
             },
@@ -68,7 +68,7 @@ $(document).ready(function() {
                 if(data) {
                     $('#'+id).html('<option id="blank" disabled selected> -- Select Item -- </option>');
                     $.each(data, function(k, v) {
-                        $('#'+id).append("<option id="+v._id+" value="+v.name+">" + v.name + "</option>");
+                        $('#'+id).append("<option id="+v._id+" value="+v._id+">" + v.name + "</option>");
                     });
                 }
             },
@@ -90,7 +90,7 @@ $(document).ready(function() {
                       if(data) {
                           $('#'+id).html('<option id="blank" disabled selected> -- Select User -- </option>');
                           $.each(data, function(k, v) {
-                              $('#'+id).append("<option id="+v._id+" value="+v.name+">" + v.name + "</option>");
+                              $('#'+id).append("<option id="+v._id+" value="+v.username+">" + v.username + "</option>");
                           });
                       }
                   },

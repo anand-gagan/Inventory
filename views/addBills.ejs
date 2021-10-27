@@ -124,7 +124,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="clientModalLabel">Add new Client</h5>
+                            <h5 class="modal-title" id="clientModalLabel">Add new vendor</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -188,10 +188,10 @@
                     var loc = document.getElementById('location'+i);
 
                     if(item != null && qua != null && loc != null){
-                        obj.item = item.value;
+                        obj.itemId = item.value;
                         obj.quantity = qua.value;
                         obj.location = loc.value;
-                        obj.vendor = vendor.value;
+                        obj.vendorId = vendor.value;
                         obj.date = date.value;
 
                         data[j] = obj;
