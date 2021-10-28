@@ -76,8 +76,13 @@ module.exports = function (app, mongoose, user, passport) {
     app.get('/', function(req, res){
         if(!req.user)
             res.redirect('/login');
-        else
-            res.render('home');
+        else {
+            if(req.user.username == "naveen")
+                res.render('home', {isAdmin : true});
+            else{
+                res.render('home', {isAdmin : false}); 
+            }
+        }
     });
 
     app.post('/login', passport.authenticate("local", {
